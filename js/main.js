@@ -1,34 +1,39 @@
-const studentPerPage = 10;
+const STUDENTS_PER_PAGE = 10;
+const DEFAULT_PAGE = 1;
 
 $( document ).ready(function() {
-    
-    //console.log( "Document Ready !" );
 
-	setPage(1);
-    
-    numberOfStudents = $('.student-item').length;
+	pageInit();
 
-    numberOfPage = Math.floor(numberOfStudents / studentPerPage) + 1;
+});
+
+function pageInit() {
+
+	var studentArray = [];
+
+    $( ".student-item" ).each(function() {
+  		studentArray.push( $( this ) );
+	});
+
+	setPage( DEFAULT_PAGE, studentArray );
+
+    numberOfStudents = studentArray.length;
+
+    numberOfPage = Math.floor((numberOfStudents-1) / STUDENTS_PER_PAGE) + 1;
 
     generateNav(numberOfPage);
 
     generateSearch();
 
-    $( ".pagination a" ).on( "click", function() {
-  		
-  		resetNav();
+    initBindings(studentArray);
 
-  		setPage( $( this ).text() );
+}
 
-  		$( this ).addClass( "active" )
-	  	
-	  	//console.log( $( this ).text() );
-
-	});
+function initBindings( studentArray ) {
 
 	$( ".student-search button" ).on( "click", function() {
   		
-  		searchStudents( $( ".student-search input" ).val() );
+  		searchStudents( $( ".student-search input" ).val(), studentArray );
 
 	});
 
@@ -38,7 +43,17 @@ $( document ).ready(function() {
 	  }
 	});
 
-});
+    $( ".pagination a" ).on( "click", function() {
+ 
+  		resetNav();
+
+  		console.log( $( this ).text() );
+  		setPage( $( this ).text(), studentArray );
+
+  		$( this ).addClass( "active" )
+
+	});
+}
 
 function generateNav( numberOfPage ) {
 
@@ -75,41 +90,41 @@ function resetNav() {
 
 }
 
-function setPage( pageNumber ) {
+function setPage( pageNumber, studentArray ) {
 
-	var high = pageNumber * studentPerPage;
-	var low = high - studentPerPage; 
-
-	// console.log( high );
-	// console.log( low );
+	var high = pageNumber * STUDENTS_PER_PAGE;
+	var low = high - STUDENTS_PER_PAGE; 
 
 	var studentCounter = 1; 
 
-    $( ".student-item" ).each(function() {
-    	
-    	if( studentCounter > low && studentCounter <= high ) {
+	$.each(studentArray, function(){
+		if( studentCounter > low && studentCounter <= high ) {
     		$(this).show();		
     	} else {
     		$(this).hide();		
     	}	
 	  
 	  	studentCounter++;
-	  	
 	});
 
 }
 
-function searchStudents( keyword ) {
+function searchStudents( keyword, studentArray ) {
 	
 	$( ".no-results" ).remove();
 
 	var numberOfResults = 0;
 
+	studentArray = [];
+
 	$( ".student-item h3" ).each(function() {
     	
     	if ( $( this ).text().toLowerCase().indexOf( keyword.toLowerCase()) >= 0 ) {
+
+    		studentArray.push( $( this ).parent().parent() );
+
     		numberOfResults++;
-    		$( this ).parent().parent().show();
+    		
     	} else {
     		$( this ).parent().parent().hide();
     	}
@@ -120,8 +135,11 @@ function searchStudents( keyword ) {
   		$( ".page-header" ).after( '<div class="no-results">aucun résultat</div>' );	
 	  	generateNav( 0 );	
   	} else {
-  		generateNav( Math.floor(numberOfResults / studentPerPage) + 1 );
+  		generateNav( Math.floor((numberOfResults-1) / STUDENTS_PER_PAGE) + 1 );
+  		
+  		setPage(DEFAULT_PAGE, studentArray);
   	}
 
-	console.log( keyword );
+  	 initBindings(studentArray);
+
 }
