@@ -2,7 +2,7 @@ const STUDENTS_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;
 
 // main jQuery event to call functions as soon as the page is ready. 
-$( document ).ready(function() {
+$( document ).ready( function() {
 
 	pageInit();	// Call the page init function. *Mostly for readability
 
@@ -19,61 +19,26 @@ function pageInit() {
 	var studentArray = []; // Initialize the student list 
 
 	// Loop through all the student-item <li> items of the list.
-    $( ".student-item" ).each(function() {
+    $( ".student-item" ).each( function() {
 
   		studentArray.push( $( this ) ); // Add every individual student section in a jQuery object array.
 
 	});
 
-	setPage( DEFAULT_PAGE, studentArray ); // Set the view to show the first 10 students
-
     numberOfStudents = studentArray.length; // Get the total number of students on the page
+ 
+    numberOfPage = Math.floor( ( numberOfStudents-1 ) / STUDENTS_PER_PAGE ) + 1; // Calculate the number of pages to add in the nav
 
-    numberOfPage = Math.floor((numberOfStudents-1) / STUDENTS_PER_PAGE) + 1; // Calculate the number of pages to add in the nav
-
-    generateNav(numberOfPage); // Call the function to generate the nav buttons. 
+    generateNav( numberOfPage ); // Call the function to generate the nav buttons. 
 
     generateSearch(); // Call the function to add the search html to the page
 
-    initBindings(studentArray); // Call the function add jQuery event bindings.
+    initSearchBindings( studentArray ); // Call the function to add jQuery event bindings for the search input and button.
 
-}
+	initNavBindings( studentArray ); // Call the function to add jQuery event bindings for the page nav.
 
-/* 
-// initBinding function
-// Initialize the jQuery bindings required for the naviguation and search features.
-*/  
-function initBindings( studentArray ) {
-
-	// Initialize a click event binding with the .student-search button
-	$( ".student-search button" ).on( "click", function() {
-  		
-  		searchStudents( $( ".student-search input" ).val(), studentArray );
-
-	});
-
-	// Initialize a keypress event binding to replicate the search click behavior when the ENTER key is pressed (extra)
-	$('.student-search input').keypress(function(event){
-
-		// If the ENTER key is pressed
-	  	if(event.keyCode == 13) {
-
-	    	$('.student-search button').click(); // Call the same function than the search button click
-
-	  	}
-
-	});
-
-	//Initialize a click event binding on the pagination links
-    $( ".pagination a" ).on( "click", function() {
- 
-  		resetNav(); // Reset the nav active state
-
-  		setPage( $( this ).text(), studentArray ); // Call the function to change the page view 
-
-  		$( this ).addClass( "active" ); // set the clicked page to active in the nav
-
-	});
+	setPage( DEFAULT_PAGE, studentArray ); // Set the view to show the first 10 students
+	
 }
 
 /* 
@@ -109,16 +74,6 @@ function generateNav( numberOfPage ) {
 }
 
 /* 
-// generateSearch function
-// Dynamically add the search html to the page.
-*/  
-function generateSearch() {
-
-	$( "h2" ).after( '<div class="student-search"><input placeholder="Search for students..."><button>Search</button></div>' );	// Add the search html to the DOM
-
-}
-
-/* 
 // resetNav function
 // remove the active class form the navs elements
 */  
@@ -129,6 +84,62 @@ function resetNav() {
     	
     	$( this ).removeClass( "active" ); // remove the css active class
 	  	
+	});
+
+}
+
+/* 
+// generateSearch function
+// Dynamically add the search html to the page.
+*/  
+function generateSearch() {
+
+	$( "h2" ).after( '<div class="student-search"><input placeholder="Search for students..."><button>Search</button></div>' );	// Add the search html to the DOM
+
+}
+
+/* 
+// initSearchBindings function
+// Initialize the jQuery bindings required for the search features.
+*/  
+function initSearchBindings( studentArray ) {
+
+	// Initialize a click event binding with the .student-search button
+	$( ".student-search button" ).on( "click", function() {
+  		
+  		searchStudents( $( ".student-search input" ).val(), studentArray );
+
+	});
+
+	// Initialize a keypress event binding to replicate the search click behavior when the ENTER key is pressed (extra)
+	$('.student-search input').keypress( function( event ){
+
+		// If the ENTER key is pressed
+	  	if( event.keyCode == 13 ) {
+
+	    	$('.student-search button').click(); // Call the same function than the search button click
+
+	  	}
+
+	});
+
+}
+
+/* 
+// initNavBindings function
+// Initialize the jQuery bindings required for the naviguation feature.
+*/  
+function initNavBindings( studentArray ) {
+	
+	//Initialize a click event binding on the pagination links
+    $( ".pagination a" ).on( "click", function() {
+ 
+  		resetNav(); // Reset the nav active state
+
+  		setPage( $( this ).text(), studentArray ); // Call the function to change the page view 
+
+  		$( this ).addClass( "active" ); // set the clicked page to active in the nav
+
 	});
 
 }
@@ -211,6 +222,6 @@ function searchStudents( keyword, studentArray ) {
 
   	}
 
-  	 initBindings(studentArray); // Reinitialize the bindings on the new nav. 
+  	 initNavBindings(studentArray); // Reinitialize the bindings on the new nav. 
 
 }
