@@ -38,7 +38,7 @@ function pageInit() {
 	initNavBindings( studentArray ); // Call the function to add jQuery event bindings for the page nav.
 
 	setPage( DEFAULT_PAGE, studentArray ); // Set the view to show the first 10 students
-	
+
 }
 
 /* 
@@ -201,7 +201,18 @@ function searchStudents( keyword, studentArray ) {
     		
     	} else {
 
-    		$( this ).parent().parent().hide(); // Hide all the other students
+    		// If the keyword isn't contained in the name we naviguate to the sibling element containing the email
+    		if ( $( this ).siblings(".email").text().toLowerCase().indexOf( keyword.toLowerCase()) >= 0 ) {
+
+	    		studentArray.push( $( this ).parent().parent() ); // Add the complete student section html to the result array
+
+	    		numberOfResults++; // Increment the number of results found
+	    		
+	    	} else {
+
+	    		$( this ).parent().parent().hide(); // Hide all the other students
+
+    		}
 
     	}
 	  
