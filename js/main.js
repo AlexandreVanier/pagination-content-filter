@@ -37,7 +37,7 @@ function pageInit() {
 
 	initNavBindings( studentArray ); // Call the function to add jQuery event bindings for the page nav.
 
-	setPage( DEFAULT_PAGE, studentArray ); // Set the view to show the first 10 students
+	showPage( DEFAULT_PAGE, studentArray ); // Set the view to show the first 10 students
 
 }
 
@@ -136,7 +136,7 @@ function initNavBindings( studentArray ) {
  
   		resetNav(); // Reset the nav active state
 
-  		setPage( $( this ).text(), studentArray ); // Call the function to change the page view 
+  		showPage( $( this ).text(), studentArray ); // Call the function to change the page view 
 
   		$( this ).addClass( "active" ); // set the clicked page to active in the nav
 
@@ -145,10 +145,10 @@ function initNavBindings( studentArray ) {
 }
 
 /* 
-// setPage function
+// showPage function
 // Generate the right student list according to the current page by showing or hiding listings.
 */  
-function setPage( pageNumber, studentArray ) {
+function showPage( pageNumber, studentArray ) {
 
 	var high = pageNumber * STUDENTS_PER_PAGE; // Calculate the highest student position to be dislayed on the current page
 
@@ -229,7 +229,7 @@ function searchStudents( keyword, studentArray ) {
 
   		generateNav( Math.floor((numberOfResults-1) / STUDENTS_PER_PAGE) + 1 ); // Call the generate nav function with the right amount of pages 
   		
-  		setPage(DEFAULT_PAGE, studentArray); // Call the setPage function with the results studentArray to show the correct listing
+  		showPage(DEFAULT_PAGE, studentArray); // Call the showPage function with the results studentArray to show the correct listing
 
   	}
 
